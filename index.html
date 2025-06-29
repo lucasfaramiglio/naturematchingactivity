@@ -155,6 +155,25 @@
             display: block;
         }
 
+        .image-number {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            width: 24px;
+            height: 24px;
+            background: var(--purple);
+            border: 2px solid var(--orange);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 20;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
         .image-item.selected {
             transform: scale(1.1);
             box-shadow: 0 0 20px var(--orange);
@@ -207,7 +226,7 @@
         .word-item {
             background: var(--orange);
             color: var(--white);
-            padding: 4px 6px; /* Changed from 8px 6px to make it shorter vertically */
+            padding: 4px 6px;
             border-radius: 6px;
             text-align: center;
             font-weight: bold;
@@ -353,6 +372,14 @@
                 min-height: 120px;
             }
             
+            .image-number {
+                width: 20px;
+                height: 20px;
+                font-size: 10px;
+                top: 6px;
+                left: 6px;
+            }
+            
             .words-grid {
                 grid-template-columns: repeat(4, 1fr);
                 grid-template-rows: repeat(5, 1fr);
@@ -362,7 +389,7 @@
             
             .word-item {
                 font-size: 0.9em;
-                padding: 4px 4px; /* Changed from 6px 4px to maintain proportion */
+                padding: 4px 4px;
             }
         }
     </style>
@@ -460,16 +487,25 @@
             const imagesGrid = document.getElementById('imagesGrid');
             const wordsGrid = document.getElementById('wordsGrid');
             
-            // Shuffle the arrays for random positioning
-            const shuffledImages = shuffleArray(imageData);
+            // Clear existing content
+            imagesGrid.innerHTML = '';
+            wordsGrid.innerHTML = '';
+            
+            // Create a fixed order for images (not shuffled) to maintain consistent numbering
+            const orderedImages = [...imageData];
             const shuffledWords = shuffleArray(imageData.map(item => item.word));
             
-            // Create image elements
-            shuffledImages.forEach((item, index) => {
+            // Create image elements with sequential numbering
+            orderedImages.forEach((item, index) => {
                 const imageDiv = document.createElement('div');
                 imageDiv.className = 'image-item';
                 imageDiv.dataset.word = item.word;
                 imageDiv.dataset.index = index;
+                
+                // Create the number circle
+                const numberCircle = document.createElement('div');
+                numberCircle.className = 'image-number';
+                numberCircle.textContent = index + 1;
                 
                 const img = document.createElement('img');
                 img.src = item.file;
@@ -484,6 +520,7 @@
                 };
                 
                 imageDiv.appendChild(img);
+                imageDiv.appendChild(numberCircle);
                 imageDiv.addEventListener('click', () => selectImage(imageDiv));
                 imagesGrid.appendChild(imageDiv);
             });
@@ -600,10 +637,6 @@
             resetBtn.disabled = true;
             
             setTimeout(() => {
-                // Clear the grids
-                document.getElementById('imagesGrid').innerHTML = '';
-                document.getElementById('wordsGrid').innerHTML = '';
-                
                 // Reset game state
                 selectedImage = null;
                 selectedWord = null;
